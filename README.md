@@ -33,7 +33,8 @@ can be found in this example
 ## Learn More
 
 To learn more about Skip, take a look at the following resources:
-[Skip API Documentation](https://api-docs.skip.money/docs/introduction)
-[Request API keys](https://api-docs.skip.money/docs/api-keys)
-[ibc.fun](https://ibc.fun/)
-[Skip SDK](https://api-docs.skip.money/docs/typescript-sdk)
+
+- [Skip API Documentation](https://api-docs.skip.money/docs/introduction)
+- [Request API keys](https://api-docs.skip.money/docs/api-keys)
+- [ibc.fun](https://ibc.fun/)
+- [Skip SDK](https://api-docs.skip.money/docs/typescript-sdk)
