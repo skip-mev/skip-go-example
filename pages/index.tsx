@@ -1,11 +1,12 @@
-import { SkipClient } from "@skip-go/client";
+import { SkipClient, Chain, Asset } from "@skip-go/client";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import Head from "next/head";
-import { useEffect } from "react";
 import { createWalletClient, custom } from "viem";
 import { mainnet } from "viem/chains";
+import { useState } from "react";
 
 export default function Home() {
+
   const skipClient = new SkipClient({
     getCosmosSigner: async (chainID) => {
       const offlineSigner = window.keplr?.getOfflineSigner(chainID);
@@ -66,6 +67,12 @@ export default function Home() {
         onTransactionCompleted: async (chainID, txHash) => {
           console.log("Transaction completed", chainID, txHash);
         },
+        onTransactionBroadcast: async ({ txHash, chainID }) => {
+          console.log("Transaction broadcasted", txHash, chainID);
+        },
+        onTransactionTracked: async ({ txHash, chainID }) => {
+          console.log("Transaction tracked", txHash, chainID);
+        }
       });
       console.log("Route successfully executed");
     } catch (error) {
@@ -86,7 +93,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Skip simple example</title>
+        <title>Simple Skip Go Example</title>
       </Head>
       <main>
         <div>
