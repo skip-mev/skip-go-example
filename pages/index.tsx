@@ -1,4 +1,4 @@
-import { SkipRouter } from "@skip-router/core";
+import { SkipClient } from "@skip-go/client";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import Head from "next/head";
 import { useEffect } from "react";
@@ -6,7 +6,7 @@ import { createWalletClient, custom } from "viem";
 import { mainnet } from "viem/chains";
 
 export default function Home() {
-  const skipClient = new SkipRouter({
+  const skipClient = new SkipClient({
     getCosmosSigner: async (chainID) => {
       const offlineSigner = window.keplr?.getOfflineSigner(chainID);
       if (!offlineSigner) throw new Error("Keplr not installed");
