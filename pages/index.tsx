@@ -3,7 +3,7 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import Head from "next/head";
 import { createWalletClient, custom } from "viem";
 import { mainnet } from "viem/chains";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [route, setRoute] = useState<RouteResponse | null>(null);
@@ -11,7 +11,8 @@ export default function Home() {
   const skipClient = new SkipClient({
     getCosmosSigner: async (chainID) => {
       const offlineSigner = await window.keplr?.getOfflineSigner(chainID);
-      if (!offlineSigner) throw new Error("Keplr not installed or chain not added");
+      if (!offlineSigner)
+        throw new Error("Keplr not installed or chain not added");
       return offlineSigner;
     },
     getEVMSigner: async () => {
@@ -28,12 +29,26 @@ export default function Home() {
       await phantom.connect();
       return phantom;
     },
+    endpointOptions: {
+      getRpcEndpointForChain: async (chainID) => {
+        if (chainID === "solana") {
+          return "https://api.mainnet-beta.solana.com";
+        } else return "";
+      },
+    },
+
     apiURL: "/api/skip",
+  });
+
+  useEffect(() => {
+    getChains();
+    getAssets();
   });
 
   // Transfer 1 USDC from Noble to Osmosis
   const getCosmosRoute = async () => {
-    try{
+    try {
+      setRoute(null);
       const result = await skipClient.route({
         amountIn: "1000000",
         sourceAssetDenom: "uusdc",
@@ -49,9 +64,10 @@ export default function Home() {
     }
   };
 
-  // Transfer 1 USDC from Solana to Cosmos
+  // Transfer 1 USDC from Solana to Noble
   const getSolanaToCosmosRoute = async () => {
     try {
+      setRoute(null);
       const result = await skipClient.route({
         sourceAssetDenom: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
         sourceAssetChainID: "solana",
@@ -66,78 +82,72 @@ export default function Home() {
     }
   };
 
-  // Transfer 1 USDC from Ethereum to NOBLE
-  const getCosmosToEVMRoute = async () => {
+  // Transfer 1 USDC from Ethereum to Noble
+  const getEVMToCosmosRoute = async () => {
     try {
+      setRoute(null);
       const result = await skipClient.route({
         sourceAssetDenom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         sourceAssetChainID: "1",
         destAssetDenom: "uusdc",
         destAssetChainID: "noble-1",
         amountIn: "1000000",
-        smartRelay: true
+        smartRelay: true,
       });
       setRoute(result);
     } catch (error) {
-      console.error("Error getting Cosmos to EVM route:", error);
+      console.error("Error getting Ethereum to Noble route:", error);
+    }
+  };
+
+  const getAddress = async (chainID: string) => {
+    // Ethereum mainnet
+    if (chainID === "1") {
+      const address = window?.ethereum?.selectedAddress;
+      return {
+        chainID,
+        address
+      };
+      // Solana mainnet
+    } else if (chainID === "solana") {
+      const phantom = new PhantomWalletAdapter();
+      await phantom.connect();
+      const publicKey = phantom.publicKey?.toBase58();
+      if (!publicKey) throw new Error("Unable to get Solana address");
+      return {
+        chainID,
+        address: publicKey,
+      };
+      // Cosmos chains
+    } else {
+      const key = await window.keplr?.getKey(chainID);
+      if (!key) throw new Error(`No key for chainID: ${chainID}`);
+      return {
+        chainID,
+        address: key.bech32Address,
+      };
     }
   };
 
   // Function to execute the route
   const onExecuteRoute = async () => {
-    if (!route) {
-      console.error("No route selected");
-      return;
-    }
-    console.log("Executing route");
     try {
+      if (!route) return;
       const userAddresses = await Promise.all(
-        route.requiredChainAddresses.map(async (chainID) => {
-          // Determine the correct wallet based on chainID
-          if (chainID.startsWith("cosmos") || chainID.startsWith("osmosis") || chainID === "noble-1") {
-            // Cosmos chains
-            const key = await window.keplr?.getKey(chainID);
-            if (!key) throw new Error(`No key for chainID: ${chainID}`);
-            return {
-              chainID,
-              address: key.bech32Address,
-            };
-          } else if (chainID === "1") {
-            // Ethereum mainnet
-            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-            return {
-              chainID,
-              address: accounts?.[0],
-            };
-          } else if (chainID === "solana") {
-            // Solana
-            const phantom = new PhantomWalletAdapter();
-            await phantom.connect();
-            const publicKey = phantom.publicKey?.toBase58();
-            console.log('publicKey', publicKey)
-            if (!publicKey) throw new Error("Unable to get Solana address");
-            return {
-              chainID,
-              address: publicKey,
-            };
-          } else {
-            throw new Error(`Unsupported chain ID: ${chainID}`);
-          }
-        }),
+        route.requiredChainAddresses.map((chainID) => getAddress(chainID))
       );
-
       await skipClient.executeRoute({
-        route: route,
+        route,
         userAddresses,
         onTransactionCompleted: async (chainID, txHash) => {
           console.log("Transaction completed", chainID, txHash);
         },
-        onTransactionBroadcast: async ({chainID, txHash}) => {
+        onTransactionBroadcast: async ({ chainID, txHash }) => {
           console.log("Transaction broadcasted", chainID, txHash);
         },
-        onTransactionTracked: async ({chainID, txHash}) => {
+        onTransactionTracked: async ({ chainID, txHash }) => {
           console.log("Transaction tracked", chainID, txHash);
-        }
+        },
       });
       console.log("Route successfully executed");
     } catch (error) {
@@ -173,43 +183,25 @@ export default function Home() {
         <title>Simple Skip Go Example</title>
       </Head>
       <main>
+        <p>Select a Route/Wallet Pair — Transfer 1 USDC</p>
+        <button onClick={getCosmosRoute}>Noble to Osmosis via Keplr</button>
+        <button onClick={getSolanaToCosmosRoute}>
+          Solana to Noble via Phantom
+        </button>
+        <button onClick={getEVMToCosmosRoute}>
+          Ethereum to Noble via Metamask
+        </button>
         <div>
-          <div>
-            <button
-              onClick={() => {
-                window.ethereum.request({ method: "eth_requestAccounts" });
-              }}
-            >
-              Connect Ethereum
-            </button>
-            <button
-              onClick={async () => {
-                await window.keplr?.enable(["cosmoshub-4", "osmosis-1", "noble-1"]);
-              }}
-            >
-              Connect Cosmos
-            </button>
-            <button
-              onClick={() => {
-                const phantom = new PhantomWalletAdapter();
-                phantom.connect();
-              }}
-            >
-              Connect Solana
-            </button>
-          </div>
-          <p>Select a route to execute:</p>
-          <button onClick={getCosmosRoute}>Transfer 1 USDC from Noble to Osmosis via Keplr</button>
-          <button onClick={getSolanaToCosmosRoute}>Get Solana to Cosmos Route</button>
-          <button onClick={getCosmosToEVMRoute}>Get Cosmos to EVM Route</button>
-          {route && (
-            <div>
-              <button onClick={onExecuteRoute}>Execute Route</button>
-              <p>Route details:</p>
-              <pre>{JSON.stringify(route, null, 2)}</pre>
-            </div>
-          )}
+          <button onClick={onExecuteRoute} disabled={!route}>
+            Execute Route
+          </button>
         </div>
+        {route && (
+          <div>
+            <p>Route details</p>
+            <pre>{JSON.stringify(route, null, 2)}</pre>
+          </div>
+        )}
       </main>
     </>
   );
