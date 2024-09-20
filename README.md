@@ -1,6 +1,6 @@
-# Skip Simple Next.js Example
+# Simple Skip Go Client Integration with Next.js
 
-This is a simple example of a Next.js project that uses the `@skip-router/core` for a quick start integration.
+This is a simple example of the `@skip-go/client` in a a Next.js app. This is a good template or reference for a quick start integration.
 
 ## Getting Started
 
@@ -10,7 +10,9 @@ First, install the dependencies:
 npm install
 ```
 
-Then populate the `.env` file with the following variables:
+An API key is reccomended but not required to run this example. Learn more how to [request API keys](https://docs.skip.build/go/general/api-keys).
+
+To add you API key populate the `.env` file with the following variables:
 
 ```bash
 SKIP_API_KEY=your-api-key
@@ -26,15 +28,15 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Proxying Skip API endpoint
 
-Guide to proxying Skip API endpoint can be found [here](https://api-docs.skip.money/docs/api-keys#setup-a-proxy-to-receive-skip-api-requests-and-add-the-api-key)
+To keep your API key secure and private, we recommend that you proxy the API requests from the frontend to your own backend—where you can add your API key in the header before forwarding the request to the Skip Go API.
 
-can be found in this example
+A guide to do so can be found [here](https://docs.skip.build/go/general/api-keys#setup-a-proxy-to-receive-skip-go-api-requests-and-add-the-api-key).
 
 ## Learn More
 
 To learn more about Skip, take a look at the following resources:
 
-- [Skip API Documentation](https://api-docs.skip.money/docs/introduction)
-- [Request API keys](https://api-docs.skip.money/docs/api-keys)
-- [ibc.fun](https://ibc.fun/)
-- [Skip SDK](https://api-docs.skip.money/docs/typescript-sdk)
+- [Skip Go Documentation](https://docs.skip.build/go/general/getting-started)
+- [Request API keys](https://docs.skip.build/go/general/api-keys)
+- [Skip Go Frontend](https://go.skip.build/)
+- [Skip SDK](https://www.npmjs.com/package/@skip-go/client)
