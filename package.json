@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@skip-go/client": "^0.8.2",
-    "@skip-router/core": "^4.1.0",
     "@solana/wallet-adapter-phantom": "^0.9.24",
     "next": "14.2.3",
     "react": "^18",
