@@ -1,7 +1,7 @@
 import { SkipClient, Chain, Asset, RouteResponse } from "@skip-go/client";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import Head from "next/head";
-import { createWalletClient, custom } from "viem";
+import { createWalletClient, custom, Account } from "viem";
 import { mainnet } from "viem/chains";
 import { useEffect, useState } from "react";
 
@@ -18,7 +18,11 @@ export default function Home() {
     getEVMSigner: async () => {
       const ethereum = window.ethereum;
       if (!ethereum) throw new Error("MetaMask not installed");
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' }) as Account[];
+      const account = accounts?.[0] 
+      if (!account) throw new Error('No accounts found');
       const client = createWalletClient({
+        account,
         chain: mainnet,
         transport: custom(window.ethereum),
       });
@@ -29,14 +33,6 @@ export default function Home() {
       await phantom.connect();
       return phantom;
     },
-    endpointOptions: {
-      getRpcEndpointForChain: async (chainID) => {
-        if (chainID === "solana") {
-          return "https://api.mainnet-beta.solana.com";
-        } else return "";
-      },
-    },
-
     apiURL: "/api/skip",
   });
 
@@ -103,10 +99,12 @@ export default function Home() {
   const getAddress = async (chainID: string) => {
     // Ethereum mainnet
     if (chainID === "1") {
-      const address = window?.ethereum?.selectedAddress;
-      return {
+      const accounts = await window.ethereum.request({
+        "method": "eth_requestAccounts"
+       }) as Account[];
+       return {
         chainID,
-        address
+        address: accounts?.[0]
       };
       // Solana mainnet
     } else if (chainID === "solana") {
@@ -134,7 +132,7 @@ export default function Home() {
     try {
       if (!route) return;
       const userAddresses = await Promise.all(
-        route.requiredChainAddresses.map((chainID) => getAddress(chainID))
+        route.requiredChainAddresses.map((chainID: string) => getAddress(chainID))
       );
       await skipClient.executeRoute({
         route,
