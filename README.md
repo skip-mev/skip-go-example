@@ -1,6 +1,6 @@
 # Simple Skip Go Client Integration with Next.js
 
-This is a simple example of the `@skip-go/client` in a a Next.js app. This is a good template or reference for a quick start integration.
+This is a simple example of the `@skip-go/client` in a Next.js app. This is a good template or reference for a quick start integration.
 
 ## Getting Started
 
@@ -10,7 +10,7 @@ First, install the dependencies:
 npm install
 ```
 
-An API key is reccomended but not required to run this example. Learn more how to [request API keys](https://docs.skip.build/go/general/api-keys).
+An API key is recommended but not required to run this example. Learn more how to [request API keys](https://docs.skip.build/go/general/api-keys).
 
 To add you API key populate the `.env` file with the following variables:
 

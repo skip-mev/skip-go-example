@@ -1,4 +1,4 @@
-import { SkipClient, Chain, Asset, RouteResponse } from "@skip-go/client";
+import { SkipClient, RouteResponse } from "@skip-go/client";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import Head from "next/head";
 import { createWalletClient, custom, Account } from "viem";
@@ -101,7 +101,7 @@ export default function Home() {
     if (chainID === "1") {
       const accounts = await window.ethereum.request({
         "method": "eth_requestAccounts"
-       }) as Account[];
+       }) as string[]
        return {
         chainID,
         address: accounts?.[0]
