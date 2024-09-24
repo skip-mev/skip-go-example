@@ -180,27 +180,27 @@ export default function Home() {
       <Head>
         <title>Simple Skip Go Example</title>
       </Head>
-      <main>
-        <p>Select a Route/Wallet Pair — Transfer 1 USDC</p>
-        <button onClick={getCosmosRoute}>Noble to Osmosis via Keplr</button>
-        <button onClick={getSolanaToCosmosRoute}>
-          Solana to Noble via Phantom
-        </button>
-        <button onClick={getEVMToCosmosRoute}>
-          Ethereum to Noble via Metamask
-        </button>
+      <main >
+        <p>Select a Route/Wallet Pair — Transfer 1 USDC  </p>
+        <em>Warning: This is a test transaction. No destination address has been set so your funds will be sent into the void.</em>
         <div>
-          <button onClick={onExecuteRoute} disabled={!route}>
-            Execute Route
+          <button onClick={getCosmosRoute}>Noble to Osmosis via Keplr</button>
+          <button onClick={getSolanaToCosmosRoute}>
+            Solana to Noble via Phantom
+          </button>
+          <button onClick={getEVMToCosmosRoute}>
+            Ethereum to Noble via Metamask
           </button>
         </div>
-        {route && (
-          <div>
-            <p>Route details</p>
-            <pre>{JSON.stringify(route, null, 2)}</pre>
-          </div>
-        )}
+        <button onClick={onExecuteRoute} disabled={!route}>
+          Execute Route
+        </button>
       </main>
+      {route && (
+        <div>
+          <pre>{JSON.stringify(route, null, 2)}</pre>
+        </div>
+      )}
     </>
   );
 }
