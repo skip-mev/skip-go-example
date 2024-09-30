@@ -3,7 +3,7 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import Head from "next/head";
 import { createWalletClient, custom, Account } from "viem";
 import { mainnet } from "viem/chains";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Home() {
   const [route, setRoute] = useState<RouteResponse | null>(null);
@@ -39,6 +39,7 @@ export default function Home() {
   useEffect(() => {
     getChains();
     getAssets();
+    getBalances();
   });
 
   // Transfer 1 USDC from Noble to Osmosis
@@ -174,6 +175,30 @@ export default function Home() {
       console.error("Error fetching assets:", error);
     }
   };
+
+  const getBalances = async () => {
+    try {
+      const [noble, osmosis] = await Promise.all([
+        getAddress("noble-1"),
+        getAddress("osmosis-1"),
+      ]);
+        const balances = await skipClient.balances({
+          chains: {
+          "noble-1": {
+            address: noble.address,
+            denoms: ["uusdc"]
+          },
+          "osmosis-1": {
+            address: osmosis.address,
+            denoms: [] // Fetch all denoms for address
+          }
+        }
+      });
+      console.log("Balances:", balances);
+    } catch (error) {
+      console.error("Error fetching balances:", error);
+    }
+  }
 
   return (
     <>
