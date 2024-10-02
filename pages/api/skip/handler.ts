@@ -2,7 +2,7 @@
 import type { NextApiRequest } from "next";
 import { PageConfig } from "next";
 
-const API_URL = "https://solve-dev.skip.money";
+const API_URL = "https://api.skip.build";
 
 export const config: PageConfig = {
   api: {

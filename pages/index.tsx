@@ -39,6 +39,7 @@ export default function Home() {
   useEffect(() => {
     getChains();
     getAssets();
+    getBalances();
   });
 
   // Transfer 1 USDC from Noble to Osmosis
@@ -174,6 +175,30 @@ export default function Home() {
       console.error("Error fetching assets:", error);
     }
   };
+
+  const getBalances = async () => {
+    try {
+      const [noble, osmosis] = await Promise.all([
+        getAddress("noble-1"),
+        getAddress("osmosis-1"),
+      ]);
+      const balances = await skipClient.balances({
+        chains: {
+        "noble-1": {
+          address: noble.address,
+          denoms: ["uusdc"]
+        },
+        "osmosis-1": {
+          address: osmosis.address,
+          denoms: ["ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4", "uosmo"]
+          }
+        }
+      });
+      console.log("Balances:", balances);
+    } catch (error) {
+      console.error("Error fetching balances:", error);
+    }
+  }
 
   return (
     <>
