@@ -3,7 +3,7 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import Head from "next/head";
 import { createWalletClient, custom, Account } from "viem";
 import { mainnet } from "viem/chains";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Home() {
   const [route, setRoute] = useState<RouteResponse | null>(null);
@@ -182,15 +182,15 @@ export default function Home() {
         getAddress("noble-1"),
         getAddress("osmosis-1"),
       ]);
-      const balances = await skipClient.balances({
-        chains: {
-        "noble-1": {
-          address: noble.address,
-          denoms: ["uusdc"]
-        },
-        "osmosis-1": {
-          address: osmosis.address,
-          denoms: ["ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4", "uosmo"]
+        const balances = await skipClient.balances({
+          chains: {
+          "noble-1": {
+            address: noble.address,
+            denoms: ["uusdc"]
+          },
+          "osmosis-1": {
+            address: osmosis.address,
+            denoms: [] // Fetch all denoms for address
           }
         }
       });
