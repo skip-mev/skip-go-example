@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@skip-go/client": "^0.9.3",
+    "@skip-go/client": "^0.10.1",
     "@solana/wallet-adapter-phantom": "^0.9.24",
     "next": "14.2.3",
     "react": "^18",
