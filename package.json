@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@skip-go/client": "^0.9.3",
+    "@skip-go/client": "1.0.0",
+    "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-phantom": "^0.9.24",
+    "@solana/web3.js": "^1.95.8",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "viem": "^2.13.1"
+    "viem": "^2.21.55"
   },
   "devDependencies": {
     "@keplr-wallet/types": "^0.12.95",
