@@ -211,8 +211,8 @@ export default function Home() {
         route,
         userAddresses,
         getCosmosSigner,
-        getEvmSigner: getEvmSigner as any,
-        getSvmSigner: getSvmSigner as any,
+        getEvmSigner: getEvmSigner,
+        getSvmSigner: getSvmSigner,
         onTransactionCompleted: async (txInfo: { chainId: string; txHash: string; status?: any; response?: any }) => {
           console.log("Transaction completed", txInfo.chainId, txInfo.txHash, txInfo.status, txInfo.response);
         },
